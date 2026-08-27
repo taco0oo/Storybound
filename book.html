@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storybound</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Lora:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1d29">
+<link rel="stylesheet" href="css/book.css">
+<link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+
+<div class="book-stage view">
+
+  <div class="book-topbar">
+    <button class="icon-btn" id="back-btn" aria-label="Back to shelf">←</button>
+    <div class="book-topbar__title" id="book-title">Loading…</div>
+    <div class="book-topbar__actions">
+      <button class="icon-btn" id="map-btn" aria-label="Chapter map">🔖</button>
+      <button class="icon-btn" id="behavior-btn" aria-label="Character behavior" title="Your character's behavior">🎭</button>
+      <button class="icon-btn" id="settings-btn" aria-label="AI settings">⚙</button>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="page">
+      <div class="page__text" id="page-text"></div>
+      <div class="page-footer">
+        <button type="button" class="page-footer__arrow" id="page-prev-btn" aria-label="Previous page">‹</button>
+        <div class="page-footer__right">
+          <span class="page-footer__counter" id="page-counter">pg. 1</span>
+          <button type="button" class="page-footer__arrow" id="page-next-btn" aria-label="Next page">›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="retry-controls" id="retry-controls">
+    <button type="button" id="retry-prev-btn" aria-label="Previous take">‹</button>
+    <span id="retry-label">Take 1 of 1</span>
+    <button type="button" id="retry-next-btn" aria-label="Next take">›</button>
+    <button type="button" id="retry-gen-btn">🎲 Retry</button>
+  </div>
+
+  <div class="inv-pending-note" id="inv-pending-note"></div>
+
+  <div class="turn-options" id="turn-options"></div>
+
+  <div class="custom-turn-row">
+    <input type="text" id="custom-turn-input" placeholder="Or write your own turn...">
+    <button id="custom-turn-btn" type="button">Go</button>
+  </div>
+
+  <div class="status-line" id="turn-status"></div>
+  <div class="saved-indicator" id="saved-indicator">✓ Saved</div>
+
+  <div class="panel-toggle-row">
+    <button class="panel-toggle" id="toggle-inventory">🎒 Inventory (<span id="inventory-count">0</span>)</button>
+    <button class="panel-toggle" id="toggle-coins">🪙 <span id="coins-count">0</span> coins</button>
+    <button class="panel-toggle" id="toggle-vitals">❤️ Vitals</button>
+  </div>
+
+  <!-- Inventory usage panel: tap an item to use it this turn -->
+  <div class="side-panel" id="inventory-panel">
+    <div class="inv-panel__header">
+      <span>Tap an item to use it this turn (max 5)</span>
+      <button type="button" class="inv-count-badge" id="inv-count-badge">0/5</button>
+    </div>
+    <div class="inv-count-popover" id="inv-count-popover"></div>
+    <ul id="inventory-list" class="inv-list"></ul>
+    <div class="inv-panel__actions">
+      <button type="button" class="wizard-btn wizard-btn--ghost" id="inv-cancel-btn">Cancel</button>
+      <button type="button" class="wizard-btn wizard-btn--primary" id="inv-confirm-btn">Confirm</button>
+    </div>
+  </div>
+
+  <!-- Vitals panel -->
+  <div class="side-panel" id="vitals-panel">
+    <div class="stat-line"><span>🍞 Hunger</span><span id="vital-hunger">100%</span></div>
+    <div class="stat-line"><span>⚡ Fatigue</span><span id="vital-fatigue">100%</span></div>
+    <div class="stat-line"><span>❤️ Health</span><span id="vital-health">100%</span></div>
+    <div class="stat-line"><span>🧼 Hygiene</span><span id="vital-hygiene">100%</span></div>
+  </div>
+
+</div>
+
+<!-- Character behavior modal -->
+<div class="modal-backdrop" id="behavior-backdrop">
+  <div class="modal-panel">
+    <h3>Your character's behavior</h3>
+    <p class="hint">This keeps the storyteller from putting reactions or actions in your mouth that don't fit who you are. Only what your turns say, or what clearly follows from what you write here, will happen to your character.</p>
+    <div class="modal-field">
+      <label for="behavior-textarea">Behavior / personality</label>
+      <textarea id="behavior-textarea" rows="4" placeholder="e.g. Calm and sweet even under pressure; thinks before acting; never raises their voice"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="wizard-btn wizard-btn--ghost" id="behavior-close-btn" type="button">Close</button>
+      <button class="wizard-btn wizard-btn--primary" id="behavior-save-btn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-backdrop" id="settings-backdrop">
+  <div class="modal-panel">
+    <h3>AI settings</h3>
+    <p class="hint">Paste your own API key — it's stored only in this browser and sent straight to the provider, never through any server of ours.</p>
+
+    <div class="modal-field">
+      <label for="settings-provider">Provider</label>
+      <select id="settings-provider">
+        <option value="gemini">Google Gemini</option>
+        <option value="groq">Groq</option>
+        <option value="openai">OpenAI</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label for="settings-model">Model</label>
+      <select id="settings-model"></select>
+    </div>
+    <div class="modal-field">
+      <label for="settings-key">API key</label>
+      <input type="password" id="settings-key" placeholder="Paste your key">
+    </div>
+
+    <div class="modal-actions">
+      <button class="wizard-btn wizard-btn--ghost" id="settings-close-btn" type="button">Close</button>
+      <button class="wizard-btn wizard-btn--primary" id="settings-save-btn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/ai-provider.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/book.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
