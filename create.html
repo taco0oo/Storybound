@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storybound — New Book</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Lora:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1d29">
+<link rel="stylesheet" href="css/create.css">
+</head>
+<body>
+
+<div class="create-stage view">
+
+  <div class="edit-mode-banner" id="edit-mode-banner" style="display:none;"></div>
+
+  <div class="wizard-progress">
+    <div class="wizard-progress__label" id="progress-label">Step 1 of 8 — Book Identity</div>
+    <div class="wizard-progress__track"><div class="wizard-progress__fill" id="progress-fill" style="width:12.5%"></div></div>
+  </div>
+
+  <div class="wizard-panel">
+    <form id="wizard-form">
+
+      <!-- STEP 1: BOOK IDENTITY -->
+      <div class="wizard-step" data-step="0">
+        <h2>Book identity</h2>
+        <p class="wizard-panel__hint">The foundations — tone and rules the AI holds onto for the whole book.</p>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="title">Book title</label>
+            <input type="text" id="title" placeholder="The Garden of Two Roads" required>
+          </div>
+          <div class="field-group">
+            <label for="author-alias">Author alias</label>
+            <input type="text" id="author-alias" placeholder="How you're credited">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="genre">Genre & AI tone</label>
+            <input type="text" id="genre" placeholder="Slow-burn drama, dark fantasy, comedic...">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Narrative perspective</label>
+          <div class="pill-radio-row" id="perspective-row">
+            <div class="pill-radio">
+              <input type="radio" name="perspective" id="p-first" value="first" checked>
+              <label for="p-first">First person ("I")</label>
+            </div>
+            <div class="pill-radio">
+              <input type="radio" name="perspective" id="p-second" value="second">
+              <label for="p-second">Second person ("You")</label>
+            </div>
+            <div class="pill-radio">
+              <input type="radio" name="perspective" id="p-third" value="third">
+              <label for="p-third">Third person ("They")</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-group__top">
+            <span>AI director style</span>
+            <span class="value" id="director-value">50 / 100</span>
+          </div>
+          <input type="range" id="director-slider" min="0" max="100" value="50">
+          <div class="slider-labels"><span>Action-heavy</span><span>Rich description</span></div>
+        </div>
+
+        <div class="field-group">
+          <label for="never-forget-rules">Global "never-forget" rules (one per line)</label>
+          <textarea id="never-forget-rules" placeholder="e.g. Magic always has a physical cost&#10;No character can read minds"></textarea>
+          <div class="field-note">Core rules the AI must always hold onto, no matter how the story drifts.</div>
+        </div>
+      </div>
+
+      <!-- STEP 2: PROTAGONIST -->
+      <div class="wizard-step" data-step="1">
+        <h2>Your protagonist</h2>
+        <p class="wizard-panel__hint">
+          Who are you in this story. By writing {user} instead of preferred name in descriptions, you can
+          assure that the story follows specifically you, user, and not a same named character.
+        </p>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="protag-name">Name</label>
+            <input type="text" id="protag-name" placeholder="Wren" required>
+          </div>
+          <div class="field-group">
+            <label for="protag-age">Age</label>
+            <input type="text" id="protag-age" placeholder="24">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="protag-appearance">Appearance</label>
+          <textarea id="protag-appearance"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="protag-background">Background / pre-story status</label>
+          <textarea id="protag-background" placeholder="e.g. A hermit, before meeting Alex"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="protag-behavior">Behavior / personality</label>
+          <textarea id="protag-behavior" placeholder="e.g. Calm and sweet even under pressure; thinks before acting; never raises their voice"></textarea>
+          <div class="field-note">The storyteller will only narrate reactions your turns say, or that clearly match this — it won't put words or actions in your mouth. Editable anytime later from the 🎭 button while reading.</div>
+        </div>
+
+        <div class="step-section" style="border:none; padding-bottom:0; margin-bottom:0;">
+          <div class="step-section__label">Stats</div>
+          <div id="protagonist-stats"></div>
+        </div>
+      </div>
+
+      <!-- STEP 3: WORLD & AU -->
+      <div class="wizard-step" data-step="2">
+        <h2>World & AU engine</h2>
+        <p class="wizard-panel__hint">Building on existing media? Flip the AU switch and describe the twist.</p>
+
+        <div class="field-group">
+          <label for="base-media">Base world / setting (optional)</label>
+          <textarea id="base-media" placeholder="e.g. a medieval fantasy anime, or fully original"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="lore">World lore</label>
+          <textarea id="lore" placeholder="Setting, rules, history, factions — anything the story should stay consistent with"></textarea>
+        </div>
+
+        <div class="toggle-row">
+          <span class="toggle-row__label">Alternate Universe (AU) mode</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="au-toggle">
+            <span class="toggle-switch__track"></span>
+          </label>
+        </div>
+
+        <div class="field-group" id="au-notes-wrap" style="display:none;">
+          <label for="au-notes">AU flavor notes</label>
+          <textarea id="au-notes" placeholder="e.g. modern-day highschool AU instead of the original medieval setting; they never met the villain; the great kaboom never happened"></textarea>
+        </div>
+      </div>
+
+      <!-- STEP 4: CHARACTER ROSTER -->
+      <div class="wizard-step" data-step="3">
+        <h2>Character roster</h2>
+        <p class="wizard-panel__hint">Add anyone who'll appear in the story. Feeling stats (love, trust, fear, jealousy, loyalty) always start at 0 and shift as the story plays out.</p>
+
+        <div id="characters-list"></div>
+        <button type="button" class="add-card-btn" id="add-character-btn">+ Add a character</button>
+      </div>
+
+      <!-- STEP 5: DYNAMIC KEYWORDS & INVENTORY -->
+      <div class="wizard-step" data-step="4">
+        <h2>Currency, inventory & lore words</h2>
+        <p class="wizard-panel__hint">Give each a highlight color and icon so they stand out while reading.</p>
+
+        <div class="step-section">
+          <div class="step-section__label">Currency</div>
+          <div class="keyword-row">
+            <input type="text" id="currency-name" placeholder="Coin name (e.g. Gold)">
+            <input type="text" id="currency-icon" class="narrow" placeholder="🪙">
+          </div>
+          <div class="keyword-row keyword-row--color">
+            <label for="currency-color">Highlight color</label>
+            <input type="color" id="currency-color" value="#c9a04c">
+          </div>
+          <div class="field-group">
+            <label for="currency-start">Starting amount</label>
+            <input type="text" id="currency-start" inputmode="numeric" placeholder="0">
+          </div>
+        </div>
+
+        <div class="step-section">
+          <div class="step-section__label">Starting inventory</div>
+          <div class="field-note" style="margin-bottom:10px;">Category decides whether an item is used up or stays reusable when you use it while reading.</div>
+          <div id="inventory-list"></div>
+          <button type="button" class="add-card-btn" id="add-inventory-btn">+ Add an item</button>
+        </div>
+
+        <div class="step-section" style="border:none; padding-bottom:0; margin-bottom:0;">
+          <div class="step-section__label">Key lore words</div>
+          <div id="lorewords-list"></div>
+          <button type="button" class="add-card-btn" id="add-loreword-btn">+ Add a lore word</button>
+        </div>
+      </div>
+
+      <!-- STEP 6: CHOICE & STAT MECHANICS -->
+      <div class="wizard-step" data-step="5">
+        <h2>Choice & stat mechanics</h2>
+
+        <div class="toggle-row">
+          <span class="toggle-row__label">Show success-rate odds under choices</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="success-rate-toggle" checked>
+            <span class="toggle-switch__track"></span>
+          </label>
+        </div>
+
+        <div class="field-group">
+          <label for="turns-per-page">AI turn options offered per page</label>
+          <input type="text" id="turns-per-page" inputmode="numeric" placeholder="3">
+        </div>
+
+        <div class="toggle-row">
+          <span class="toggle-row__label">Track hunger, fatigue, health & hygiene</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="vitals-toggle" checked>
+            <span class="toggle-switch__track"></span>
+          </label>
+        </div>
+
+        <div class="info-box" style="margin-bottom:16px;">
+          <strong>How vitals work:</strong> all four start at 100%. Hunger and fatigue drain as story-time passes; health and hygiene only change from what happens in the story. Any of them dropping to 15% or below forces a consequence — and you may lose a few random items or some currency while it plays out.
+        </div>
+
+        <div class="info-box">
+          <strong>Generation controls</strong> (fixed, just so you know how it works):<br>
+          5 retries max per turn · swipe left/right moves through your retry history · each retry is forced to write something meaningfully different, not a near-duplicate.
+        </div>
+      </div>
+
+      <!-- STEP 7: FIRST EPISODE -->
+      <div class="wizard-step" data-step="6">
+        <h2>Write the first episode</h2>
+        <p class="wizard-panel__hint">
+          This becomes Chapter 1 → Episode 1. Its first page is hand-written by you; the AI continues from there.
+        </p>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="chapter-title">Chapter title</label>
+            <input type="text" id="chapter-title" placeholder="Chapter 1">
+          </div>
+          <div class="field-group">
+            <label for="episode-title">Episode title</label>
+            <input type="text" id="episode-title" placeholder="Episode 1">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="opening-page">Opening page</label>
+          <textarea id="opening-page" style="min-height:180px" placeholder="Begin your story here..." required></textarea>
+        </div>
+      </div>
+
+      <!-- STEP 8: VISUAL STUDIO -->
+      <div class="wizard-step" data-step="7">
+        <h2>Visual studio</h2>
+        <p class="wizard-panel__hint">How your book looks on the shelf and while reading.</p>
+
+        <div class="step-section">
+          <div class="step-section__label">Cover</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="cover-color">Cover color</label>
+              <input type="color" id="cover-color" value="#4a3f6b">
+            </div>
+            <div class="field-group">
+              <label for="cover-accent">Accent color</label>
+              <input type="color" id="cover-accent" value="#c9a04c">
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="stamp">Stamp (an emoji or symbol)</label>
+            <input type="text" id="stamp" placeholder="🌙" maxlength="4">
+          </div>
+        </div>
+
+        <div class="step-section">
+          <div class="step-section__label">Reading page</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="paper-color">Paper tint</label>
+              <input type="color" id="paper-color" value="#f3e8d0">
+            </div>
+            <div class="field-group">
+              <label for="text-theme">Text font</label>
+              <select id="text-theme">
+                <option value="lora">Lora (default)</option>
+                <option value="fraunces">Fraunces</option>
+                <option value="serif">Classic serif</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="border-style">Border style</label>
+            <select id="border-style">
+              <option value="soft">Soft rounded</option>
+              <option value="sharp">Sharp edge</option>
+              <option value="ornate">Ornate</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="step-section" style="border:none; padding-bottom:0; margin-bottom:0;">
+          <div class="step-section__label">Turn decorators</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="turn-symbol">Choice turn symbol</label>
+              <input type="text" id="turn-symbol" placeholder="♡ ⚔ ✦" maxlength="4">
+            </div>
+            <div class="field-group">
+              <label for="divider-style">Page divider</label>
+              <input type="text" id="divider-style" placeholder="⁂  ·  ───">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-nav">
+        <button type="button" class="wizard-btn wizard-btn--ghost" id="back-btn">Back</button>
+        <button type="button" class="wizard-btn wizard-btn--primary" id="next-btn">Next</button>
+        <button type="submit" class="wizard-btn wizard-btn--primary" id="finish-btn" style="display:none">Create my book</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- Templates -->
+<template id="stat-slider-template">
+  <div class="slider-group stat-slider">
+    <div class="slider-group__top">
+      <span class="stat-slider__name"></span>
+      <span class="value stat-slider__value">20</span>
+    </div>
+    <input type="range" class="stat-slider__input" min="0" max="100" value="20">
+  </div>
+</template>
+
+<template id="character-template">
+  <div class="dynamic-card character-card">
+    <button type="button" class="dynamic-card__remove">Remove</button>
+    <div class="field-group">
+      <label>Name</label>
+      <input type="text" class="char-name" placeholder="Alex">
+    </div>
+    <div class="field-group">
+      <label>Appearance</label>
+      <textarea class="char-appearance" placeholder="Tall, dark hair, always wears a green scarf..."></textarea>
+    </div>
+    <div class="field-group">
+      <label>Backstory</label>
+      <textarea class="char-backstory"></textarea>
+    </div>
+    <div class="field-group">
+      <label>Behavior</label>
+      <textarea class="char-behavior" placeholder="Guarded at first, fiercely loyal once trusted..."></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>Starting relationship</label>
+        <select class="char-relationship">
+          <option value="Stranger" selected>Stranger</option>
+          <option value="Acquaintance">Acquaintance</option>
+          <option value="Friend">Friend</option>
+          <option value="Family">Family</option>
+          <option value="Rival">Rival</option>
+          <option value="Romantic interest">Romantic interest</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Dialogue color</label>
+        <div class="color-row">
+          <input type="color" class="char-color" value="#c9a04c">
+        </div>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Core "never-forget" trait</label>
+      <input type="text" class="char-never-forget" placeholder="e.g. Never lies, even to protect someone">
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-row__label">Platonic only — love can grow, but never romantic</span>
+      <label class="toggle-switch">
+        <input type="checkbox" class="char-platonic">
+        <span class="toggle-switch__track"></span>
+      </label>
+    </div>
+  </div>
+</template>
+
+<template id="inventory-item-template">
+  <div class="inventory-item-row">
+    <div class="keyword-row">
+      <input type="text" class="inv-name" placeholder="Bandaid">
+      <input type="text" class="inv-emoji narrow" placeholder="🩹">
+      <input type="text" class="inv-qty narrow" placeholder="1" inputmode="numeric">
+      <input type="color" class="inv-color" value="#8a3a3a">
+      <button type="button" class="remove-keyword-row">✕</button>
+    </div>
+    <div class="keyword-row keyword-row--category">
+      <select class="inv-category">
+        <option value="food">🍎 Food/Drink — used once, then gone</option>
+        <option value="tool">🔧 Tool/Weapon — reusable</option>
+        <option value="tech">💻 Tech/Electronics — reusable</option>
+        <option value="key">🗝️ Key item — never consumed</option>
+        <option value="misc" selected>📦 Misc — used once, then gone</option>
+      </select>
+    </div>
+  </div>
+</template>
+
+<template id="loreword-template">
+  <div class="keyword-row loreword-row">
+    <input type="text" class="lore-word" placeholder="e.g. The Hollow Court">
+    <input type="color" class="lore-color" value="#7c8c6b">
+    <button type="button" class="remove-keyword-row">✕</button>
+  </div>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/create.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
+

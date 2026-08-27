@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storybound — Your Library</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Lora:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1d29">
+<link rel="stylesheet" href="css/library.css">
+<link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+
+<div class="shelf-stage view">
+  <div class="shelf-header">
+    <h1 class="shelf-header__greeting" id="greeting">Welcome back</h1>
+    <div class="shelf-header__actions">
+      <button class="icon-btn" id="settings-btn" title="AI settings" aria-label="AI settings">⚙</button>
+      <button class="icon-btn" id="account-btn" title="Account" aria-label="Account">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="shelves" id="shelves">
+    <div class="loading-line">Opening the library…</div>
+  </div>
+</div>
+
+<button class="add-book-btn" id="add-book-btn" aria-label="Create a new book">+</button>
+
+<!-- Book context menu (long-press on a book cover) -->
+<div class="book-menu-backdrop" id="book-menu-backdrop">
+  <div class="book-menu" id="book-menu">
+    <button type="button" id="book-menu-pin">📌 <span id="book-menu-pin-label">Pin</span></button>
+    <button type="button" id="book-menu-edit">✎ Edit</button>
+    <button type="button" id="book-menu-delete" class="danger">🗑 Delete</button>
+    <button type="button" id="book-menu-cancel" class="ghost">Cancel</button>
+  </div>
+</div>
+
+<!-- Settings modal (same as book.html — provider, model, API key, stored per-device) -->
+<div class="modal-backdrop" id="settings-backdrop">
+  <div class="modal-panel">
+    <h3>AI settings</h3>
+    <p class="hint">Paste your own API key — it's stored only in this browser and sent straight to the provider, never through any server of ours.</p>
+
+    <div class="modal-field">
+      <label for="settings-provider">Provider</label>
+      <select id="settings-provider">
+        <option value="gemini">Google Gemini</option>
+        <option value="groq">Groq</option>
+        <option value="openai">OpenAI</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label for="settings-model">Model</label>
+      <select id="settings-model"></select>
+    </div>
+    <div class="modal-field">
+      <label for="settings-key">API key</label>
+      <input type="password" id="settings-key" placeholder="Paste your key">
+    </div>
+
+    <div class="modal-actions">
+      <button class="wizard-btn wizard-btn--ghost" id="settings-close-btn" type="button">Close</button>
+      <button class="wizard-btn wizard-btn--primary" id="settings-save-btn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Account modal — logged out: login/sign up tabs. Logged in: account info + log out. -->
+<div class="modal-backdrop" id="account-backdrop">
+  <div class="modal-panel">
+
+    <!-- Logged-out view -->
+    <div id="account-guest-view">
+      <div class="account-tabs">
+        <button type="button" class="account-tab active" id="account-tab-login">Log in</button>
+        <button type="button" class="account-tab" id="account-tab-signup">Sign up</button>
+      </div>
+
+      <p class="account-error" id="account-error"></p>
+
+      <div class="modal-field">
+        <label for="account-email">Email</label>
+        <input type="email" id="account-email" placeholder="you@example.com">
+      </div>
+      <div class="modal-field">
+        <label for="account-password">Password</label>
+        <input type="password" id="account-password" placeholder="••••••••">
+      </div>
+      <div class="modal-field" id="account-confirm-field" style="display:none;">
+        <label for="account-confirm">Confirm password</label>
+        <input type="password" id="account-confirm" placeholder="••••••••">
+      </div>
+
+      <div class="modal-actions">
+        <button class="wizard-btn wizard-btn--ghost" id="account-close-btn" type="button">Close</button>
+        <button class="wizard-btn wizard-btn--primary" id="account-submit-btn" type="button">Log in</button>
+      </div>
+    </div>
+
+    <!-- Logged-in view -->
+    <div id="account-signed-in-view" style="display:none;">
+      <h3>Your account</h3>
+      <p class="hint" id="account-email-display"></p>
+
+      <div class="modal-actions">
+        <button class="wizard-btn wizard-btn--ghost" id="account-signedin-close-btn" type="button">Close</button>
+        <button class="wizard-btn wizard-btn--primary" id="account-logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TEMP DEBUG CONSOLE — remove these two lines once debugging is done -->
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/account.js"></script>
+<script src="js/library.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
