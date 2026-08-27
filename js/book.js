@@ -38,6 +38,9 @@ const pageTextEl = document.getElementById("page-text");
 const turnOptionsEl = document.getElementById("turn-options");
 const customInput = document.getElementById("custom-turn-input");
 const customBtn = document.getElementById("custom-turn-btn");
+const lastTurnNoteEl = document.getElementById("page-last-turn");
+const redoTurnRowEl = document.getElementById("redo-turn-row");
+const redoTurnBtn = document.getElementById("redo-turn-btn");
 const statusEl = document.getElementById("turn-status");
 const inventoryListEl = document.getElementById("inventory-list");
 const inventoryCountEl = document.getElementById("inventory-count");
@@ -240,9 +243,11 @@ function renderCurrentPage(animate = false) {
   const doRender = () => {
     const divider = book.design?.dividerStyle;
     const showDivider = divider && viewPageIdx > 0;
+    const bodyHtml = colorizeDialogue(page.text, page.dialogue, bookData.characters || []);
     pageTextEl.innerHTML = showDivider
-      ? `<div class="page__divider">${escapeHtml(divider)}</div>${escapeHtml(page.text)}`
-      : escapeHtml(page.text);
+      ? `<div class="page__divider">${escapeHtml(divider)}</div>${bodyHtml}`
+      : bodyHtml;
+    renderLastTurnNote(page);
     wrap.classList.remove("turning");
   };
 
@@ -259,6 +264,104 @@ function renderCurrentPage(animate = false) {
   renderTurnOptions(latest ? (page.turnOptions || []) : []);
   renderRetryControls();
   renderPageNav();
+  renderRedoRow();
+}
+
+// -------- dialogue coloring --------
+// Wraps quoted lines the AI told us a named character spoke (see the
+// "dialogue" field in the JSON schema below) in a colored span using that
+// character's chosen dialogueColor. Falls back to plain escaped text for
+// anything it can't confidently match — never guesses.
+function colorizeDialogue(rawText, dialogueEntries, characters) {
+  if (!dialogueEntries || !dialogueEntries.length || !characters.length) {
+    return escapeHtml(rawText);
+  }
+
+  const segments = [];
+  dialogueEntries.forEach((entry) => {
+    if (!entry || !entry.line || !entry.speaker) return;
+    const character = characters.find(
+      (c) => c.name && c.name.toLowerCase() === String(entry.speaker).toLowerCase()
+    );
+    if (!character) return;
+    const idx = rawText.indexOf(entry.line);
+    if (idx === -1) return; // AI didn't quote verbatim — skip rather than mis-highlight
+    segments.push({ start: idx, end: idx + entry.line.length, color: character.dialogueColor || "#8a5cf6", name: character.name });
+  });
+
+  if (!segments.length) return escapeHtml(rawText);
+
+  // Sort and drop any overlapping segments, keeping the earliest.
+  segments.sort((a, b) => a.start - b.start);
+  const clean = [];
+  let lastEnd = -1;
+  segments.forEach((seg) => {
+    if (seg.start >= lastEnd) { clean.push(seg); lastEnd = seg.end; }
+  });
+
+  let html = "";
+  let cursor = 0;
+  clean.forEach((seg) => {
+    html += escapeHtml(rawText.slice(cursor, seg.start));
+    html += `<span class="dialogue-color" style="color:${seg.color}" title="${escapeHtml(seg.name)}">${escapeHtml(rawText.slice(seg.start, seg.end))}</span>`;
+    cursor = seg.end;
+  });
+  html += escapeHtml(rawText.slice(cursor));
+  return html;
+}
+
+// -------- "your last turn" note at the top of the page --------
+function renderLastTurnNote(page) {
+  if (!lastTurnNoteEl) return;
+  const turn = page && page.turnTaken;
+  if (!turn || !turn.text) {
+    lastTurnNoteEl.style.display = "none";
+    lastTurnNoteEl.textContent = "";
+    return;
+  }
+  lastTurnNoteEl.style.display = "";
+  lastTurnNoteEl.textContent = `You: ${turn.text}`;
+}
+
+// -------- redo last turn --------
+function renderRedoRow() {
+  if (!redoTurnRowEl) return;
+  const page = currentPages()[viewPageIdx];
+  const show = !isBusy && isLatestPage() && page && !page.basePage && page.turnTaken;
+  redoTurnRowEl.style.display = show ? "" : "none";
+}
+
+if (redoTurnBtn) {
+  redoTurnBtn.addEventListener("click", () => {
+    if (isBusy) return;
+    const pages = currentPages();
+    const page = pages[pages.length - 1];
+    if (!page || page.basePage || !page.turnTaken) return;
+
+    // Best-effort undo of this page's side effects — only possible while
+    // the in-memory variant data from generating it is still around (i.e.
+    // the reader hasn't navigated away since). If it's gone, we still let
+    // them rewrite the text, we just can't safely unwind stat/inventory
+    // changes from it.
+    if (pendingVariants.length && pendingVariants[pendingVariantIndex] && pendingVariants[pendingVariantIndex].page === page) {
+      revertSideEffects(pendingVariants[pendingVariantIndex]);
+    }
+    pendingVariants = [];
+    pendingVariantIndex = 0;
+
+    pages.pop();
+    currentPageIdx = pages.length - 1;
+    viewPageIdx = currentPageIdx;
+
+    customInput.value = page.turnTaken.text;
+    if (window.autoGrowTextarea) window.autoGrowTextarea(customInput);
+    customInput.focus();
+
+    renderCurrentPage();
+    renderSidePanels();
+    clearStatus();
+    saveProgress();
+  });
 }
 
 // -------- page browsing (read-only trip through pages already written) --------
@@ -677,11 +780,17 @@ customBtn.addEventListener("click", () => {
   if (val) {
     takeTurn(val, true);
     customInput.value = "";
+    if (window.autoGrowTextarea) window.autoGrowTextarea(customInput);
   }
 });
 
 customInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") customBtn.click();
+  // Enter submits like before; Shift+Enter drops a newline for anyone
+  // writing a longer, multi-line turn.
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    customBtn.click();
+  }
 });
 
 async function takeTurn(turnText, isCustom = false) {
@@ -724,7 +833,9 @@ async function generateVariant(isRetry) {
       id: crypto.randomUUID(),
       basePage: false,
       text: result.text,
-      turnOptions: Array.isArray(result.options) ? result.options : []
+      turnOptions: Array.isArray(result.options) ? result.options : [],
+      dialogue: Array.isArray(result.dialogue) ? result.dialogue : [],
+      turnTaken: { text: lastTurnContext.turnText, isCustom: lastTurnContext.isCustom }
     };
 
     // Revert whichever variant was previously active before switching to the new one
@@ -1019,6 +1130,7 @@ You must always respond with ONLY a JSON object matching this exact shape, no ma
 {
   "plausible": boolean,
   "text": "the next page of story text (or a short redirect if not plausible)",
+  "dialogue": [{ "speaker": "character name, exactly as listed below", "line": "the exact quoted sentence spoken, copied verbatim character-for-character from \\"text\\" including the quotation marks" }],
   ${optionsSchema},
   "statChanges": { "characterName": { "love": number, "trust": number, "loyalty": number } },
   "publicViewUpdate": "OPTIONAL — a short epithet (2-6 words) for how the world/cast now sees the protagonist, e.g. \\"a reckless daredevil\\" or \\"a quiet hermit\\". Only include this when the reader's recent choices have clearly shifted their reputation; omit otherwise.",
@@ -1036,6 +1148,7 @@ Rules:
   - "loyalty": negative deltas push toward betrayal (this character turning on the protagonist), positive deltas push toward loyalty.
   Send a signed delta (e.g. -8 or +12), not an absolute value.
 - Keep "text" to one page's worth of prose (roughly 120-220 words).
+- Whenever a named character (not the protagonist) speaks in "text", add one entry to "dialogue" per spoken line: "speaker" must exactly match that character's name as listed below, and "line" must be copied verbatim, character-for-character, straight out of "text" (quotation marks included) so it can be located and colored for the reader. Do not paraphrase or retype it — copy it exactly. Skip narration and the protagonist's own speech. If nobody named speaks this turn, use an empty array.
 - Never break character or mention that you are an AI.
 - Always follow these "never-forget" rules no matter what: ${identity.neverForgetRules?.length ? identity.neverForgetRules.join("; ") : "(none set)"}
 ${protagonist.behavior ? `\nProtagonist's behavior & personality (CRITICAL — follow exactly): ${protagonist.behavior}` : ""}
@@ -1080,15 +1193,17 @@ ${isRetry ? "\nThe reader asked for a retry — write a meaningfully different t
 }
 
 function setControlsDisabled(disabled) {
-  document.querySelectorAll(".turn-option, .custom-turn-row button, .custom-turn-row input")
+  document.querySelectorAll(".turn-option, .custom-turn-row button, .custom-turn-row textarea")
     .forEach(el => el.disabled = disabled);
   if (pagePrevBtn) pagePrevBtn.disabled = disabled || viewPageIdx <= 0;
   if (pageNextBtn) pageNextBtn.disabled = disabled;
   if (disabled) {
     document.querySelectorAll(".retry-controls button").forEach(el => el.disabled = true);
+    if (redoTurnRowEl) redoTurnRowEl.style.display = "none";
   } else {
     renderRetryControls(); // re-derives correct enabled/disabled state per button
     renderPageNav();
+    renderRedoRow();
   }
 }
 
