@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>Storybound</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +30,7 @@
 
   <div class="page-wrap">
     <div class="page">
+      <div class="page__last-turn" id="page-last-turn"></div>
       <div class="page__text" id="page-text"></div>
       <div class="page-footer">
         <button type="button" class="page-footer__arrow" id="page-prev-btn" aria-label="Previous page">‹</button>
@@ -52,8 +53,12 @@
 
   <div class="turn-options" id="turn-options"></div>
 
+  <div class="redo-turn-row" id="redo-turn-row" style="display:none;">
+    <button type="button" id="redo-turn-btn">↺ Redo last turn</button>
+  </div>
+
   <div class="custom-turn-row">
-    <input type="text" id="custom-turn-input" placeholder="Or write your own turn...">
+    <textarea id="custom-turn-input" rows="1" autocomplete="off" name="sb-turn-freetext" data-lpignore="true" data-1p-ignore data-bwignore placeholder="Or write your own turn... (Shift+Enter for a new line)"></textarea>
     <button id="custom-turn-btn" type="button">Go</button>
   </div>
 
@@ -107,7 +112,7 @@
     <p class="hint">This keeps the storyteller from putting reactions or actions in your mouth that don't fit who you are. Only what your turns say, or what clearly follows from what you write here, will happen to your character.</p>
     <div class="modal-field">
       <label for="behavior-textarea">Behavior / personality</label>
-      <textarea id="behavior-textarea" rows="4" placeholder="e.g. Calm and sweet even under pressure; thinks before acting; never raises their voice"></textarea>
+      <textarea id="behavior-textarea" class="autogrow" rows="4" autocomplete="off" placeholder="e.g. Calm and sweet even under pressure; thinks before acting; never raises their voice"></textarea>
     </div>
     <div class="modal-actions">
       <button class="wizard-btn wizard-btn--ghost" id="behavior-close-btn" type="button">Close</button>
@@ -136,7 +141,7 @@
     </div>
     <div class="modal-field">
       <label for="settings-key">API key</label>
-      <input type="password" id="settings-key" placeholder="Paste your key">
+      <input type="password" id="settings-key" placeholder="Paste your key" autocomplete="off">
     </div>
 
     <div class="modal-actions">

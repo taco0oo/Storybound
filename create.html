@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>Storybound — New Book</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,18 +35,18 @@
         <div class="field-row">
           <div class="field-group">
             <label for="title">Book title</label>
-            <input type="text" id="title" placeholder="The Garden of Two Roads" required>
+            <input type="text" id="title" placeholder="The Garden of Two Roads" required autocomplete="off">
           </div>
           <div class="field-group">
             <label for="author-alias">Author alias</label>
-            <input type="text" id="author-alias" placeholder="How you're credited">
+            <input type="text" id="author-alias" placeholder="How you're credited" autocomplete="off">
           </div>
         </div>
 
         <div class="field-row">
           <div class="field-group">
             <label for="genre">Genre & AI tone</label>
-            <input type="text" id="genre" placeholder="Slow-burn drama, dark fantasy, comedic...">
+            <input type="text" id="genre" placeholder="Slow-burn drama, dark fantasy, comedic..." autocomplete="off">
           </div>
         </div>
 
@@ -79,7 +79,7 @@
 
         <div class="field-group">
           <label for="never-forget-rules">Global "never-forget" rules (one per line)</label>
-          <textarea id="never-forget-rules" placeholder="e.g. Magic always has a physical cost&#10;No character can read minds"></textarea>
+          <textarea id="never-forget-rules" placeholder="e.g. Magic always has a physical cost&#10;No character can read minds" autocomplete="off"></textarea>
           <div class="field-note">Core rules the AI must always hold onto, no matter how the story drifts.</div>
         </div>
       </div>
@@ -95,27 +95,27 @@
         <div class="field-row">
           <div class="field-group">
             <label for="protag-name">Name</label>
-            <input type="text" id="protag-name" placeholder="Wren" required>
+            <input type="text" id="protag-name" placeholder="Wren" required autocomplete="off">
           </div>
           <div class="field-group">
             <label for="protag-age">Age</label>
-            <input type="text" id="protag-age" placeholder="24">
+            <input type="text" id="protag-age" placeholder="24" autocomplete="off">
           </div>
         </div>
 
         <div class="field-group">
           <label for="protag-appearance">Appearance</label>
-          <textarea id="protag-appearance"></textarea>
+          <textarea id="protag-appearance" autocomplete="off"></textarea>
         </div>
 
         <div class="field-group">
           <label for="protag-background">Background / pre-story status</label>
-          <textarea id="protag-background" placeholder="e.g. A hermit, before meeting Alex"></textarea>
+          <textarea id="protag-background" placeholder="e.g. A hermit, before meeting Alex" autocomplete="off"></textarea>
         </div>
 
         <div class="field-group">
           <label for="protag-behavior">Behavior / personality</label>
-          <textarea id="protag-behavior" placeholder="e.g. Calm and sweet even under pressure; thinks before acting; never raises their voice"></textarea>
+          <textarea id="protag-behavior" placeholder="e.g. Calm and sweet even under pressure; thinks before acting; never raises their voice" autocomplete="off"></textarea>
           <div class="field-note">The storyteller will only narrate reactions your turns say, or that clearly match this — it won't put words or actions in your mouth. Editable anytime later from the 🎭 button while reading.</div>
         </div>
 
@@ -132,12 +132,12 @@
 
         <div class="field-group">
           <label for="base-media">Base world / setting (optional)</label>
-          <textarea id="base-media" placeholder="e.g. a medieval fantasy anime, or fully original"></textarea>
+          <textarea id="base-media" placeholder="e.g. a medieval fantasy anime, or fully original" autocomplete="off"></textarea>
         </div>
 
         <div class="field-group">
           <label for="lore">World lore</label>
-          <textarea id="lore" placeholder="Setting, rules, history, factions — anything the story should stay consistent with"></textarea>
+          <textarea id="lore" placeholder="Setting, rules, history, factions — anything the story should stay consistent with" autocomplete="off"></textarea>
         </div>
 
         <div class="toggle-row">
@@ -150,7 +150,7 @@
 
         <div class="field-group" id="au-notes-wrap" style="display:none;">
           <label for="au-notes">AU flavor notes</label>
-          <textarea id="au-notes" placeholder="e.g. modern-day highschool AU instead of the original medieval setting; they never met the villain; the great kaboom never happened"></textarea>
+          <textarea id="au-notes" placeholder="e.g. modern-day highschool AU instead of the original medieval setting; they never met the villain; the great kaboom never happened" autocomplete="off"></textarea>
         </div>
       </div>
 
@@ -171,8 +171,8 @@
         <div class="step-section">
           <div class="step-section__label">Currency</div>
           <div class="keyword-row">
-            <input type="text" id="currency-name" placeholder="Coin name (e.g. Gold)">
-            <input type="text" id="currency-icon" class="narrow" placeholder="🪙">
+            <input type="text" id="currency-name" placeholder="Coin name (e.g. Gold)" autocomplete="off">
+            <input type="text" id="currency-icon" class="narrow" placeholder="🪙" autocomplete="off">
           </div>
           <div class="keyword-row keyword-row--color">
             <label for="currency-color">Highlight color</label>
@@ -180,7 +180,7 @@
           </div>
           <div class="field-group">
             <label for="currency-start">Starting amount</label>
-            <input type="text" id="currency-start" inputmode="numeric" placeholder="0">
+            <input type="text" id="currency-start" inputmode="numeric" placeholder="0" autocomplete="off">
           </div>
         </div>
 
@@ -212,7 +212,7 @@
 
         <div class="field-group">
           <label for="turns-per-page">AI turn options offered per page</label>
-          <input type="text" id="turns-per-page" inputmode="numeric" placeholder="3">
+          <input type="text" id="turns-per-page" inputmode="numeric" placeholder="3" autocomplete="off">
         </div>
 
         <div class="toggle-row">
@@ -243,17 +243,17 @@
         <div class="field-row">
           <div class="field-group">
             <label for="chapter-title">Chapter title</label>
-            <input type="text" id="chapter-title" placeholder="Chapter 1">
+            <input type="text" id="chapter-title" placeholder="Chapter 1" autocomplete="off">
           </div>
           <div class="field-group">
             <label for="episode-title">Episode title</label>
-            <input type="text" id="episode-title" placeholder="Episode 1">
+            <input type="text" id="episode-title" placeholder="Episode 1" autocomplete="off">
           </div>
         </div>
 
         <div class="field-group">
           <label for="opening-page">Opening page</label>
-          <textarea id="opening-page" style="min-height:180px" placeholder="Begin your story here..." required></textarea>
+          <textarea id="opening-page" style="min-height:180px" placeholder="Begin your story here..." required autocomplete="off"></textarea>
         </div>
       </div>
 
@@ -276,7 +276,7 @@
           </div>
           <div class="field-group">
             <label for="stamp">Stamp (an emoji or symbol)</label>
-            <input type="text" id="stamp" placeholder="🌙" maxlength="4">
+            <input type="text" id="stamp" placeholder="🌙" maxlength="4" autocomplete="off">
           </div>
         </div>
 
@@ -311,11 +311,11 @@
           <div class="field-row">
             <div class="field-group">
               <label for="turn-symbol">Choice turn symbol</label>
-              <input type="text" id="turn-symbol" placeholder="♡ ⚔ ✦" maxlength="4">
+              <input type="text" id="turn-symbol" placeholder="♡ ⚔ ✦" maxlength="4" autocomplete="off">
             </div>
             <div class="field-group">
               <label for="divider-style">Page divider</label>
-              <input type="text" id="divider-style" placeholder="⁂  ·  ───">
+              <input type="text" id="divider-style" placeholder="⁂  ·  ───" autocomplete="off">
             </div>
           </div>
         </div>
@@ -347,19 +347,19 @@
     <button type="button" class="dynamic-card__remove">Remove</button>
     <div class="field-group">
       <label>Name</label>
-      <input type="text" class="char-name" placeholder="Alex">
+      <input type="text" class="char-name" placeholder="Alex" autocomplete="off">
     </div>
     <div class="field-group">
       <label>Appearance</label>
-      <textarea class="char-appearance" placeholder="Tall, dark hair, always wears a green scarf..."></textarea>
+      <textarea class="char-appearance" placeholder="Tall, dark hair, always wears a green scarf..." autocomplete="off"></textarea>
     </div>
     <div class="field-group">
       <label>Backstory</label>
-      <textarea class="char-backstory"></textarea>
+      <textarea class="char-backstory" autocomplete="off"></textarea>
     </div>
     <div class="field-group">
       <label>Behavior</label>
-      <textarea class="char-behavior" placeholder="Guarded at first, fiercely loyal once trusted..."></textarea>
+      <textarea class="char-behavior" placeholder="Guarded at first, fiercely loyal once trusted..." autocomplete="off"></textarea>
     </div>
     <div class="field-row">
       <div class="field-group">
@@ -382,7 +382,7 @@
     </div>
     <div class="field-group">
       <label>Core "never-forget" trait</label>
-      <input type="text" class="char-never-forget" placeholder="e.g. Never lies, even to protect someone">
+      <input type="text" class="char-never-forget" placeholder="e.g. Never lies, even to protect someone" autocomplete="off">
     </div>
     <div class="toggle-row">
       <span class="toggle-row__label">Platonic only — love can grow, but never romantic</span>
@@ -397,9 +397,9 @@
 <template id="inventory-item-template">
   <div class="inventory-item-row">
     <div class="keyword-row">
-      <input type="text" class="inv-name" placeholder="Bandaid">
-      <input type="text" class="inv-emoji narrow" placeholder="🩹">
-      <input type="text" class="inv-qty narrow" placeholder="1" inputmode="numeric">
+      <input type="text" class="inv-name" placeholder="Bandaid" autocomplete="off">
+      <input type="text" class="inv-emoji narrow" placeholder="🩹" autocomplete="off">
+      <input type="text" class="inv-qty narrow" placeholder="1" inputmode="numeric" autocomplete="off">
       <input type="color" class="inv-color" value="#8a3a3a">
       <button type="button" class="remove-keyword-row">✕</button>
     </div>
@@ -417,7 +417,7 @@
 
 <template id="loreword-template">
   <div class="keyword-row loreword-row">
-    <input type="text" class="lore-word" placeholder="e.g. The Hollow Court">
+    <input type="text" class="lore-word" placeholder="e.g. The Hollow Court" autocomplete="off">
     <input type="color" class="lore-color" value="#7c8c6b">
     <button type="button" class="remove-keyword-row">✕</button>
   </div>
