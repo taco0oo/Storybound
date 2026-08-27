@@ -56,6 +56,29 @@
   white-space: pre-wrap;
 }
 
+.dialogue-color {
+  font-weight: 600;
+}
+
+/* -------- "your last turn" note -------- */
+.page__last-turn {
+  display: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--charcoal-soft);
+  background: rgba(43,38,32,0.06);
+  border-left: 3px solid var(--gold);
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.page__last-turn:not(:empty) {
+  display: block;
+}
+
 /* -------- page footer: browse earlier pages without losing your place -------- */
 .page-footer {
   position: absolute;
@@ -164,11 +187,12 @@
 
 .custom-turn-row {
   display: flex;
+  align-items: flex-end;
   gap: 8px;
   margin-top: 4px;
 }
 
-.custom-turn-row input {
+.custom-turn-row textarea {
   flex: 1;
   padding: 13px 16px;
   background: var(--ink-soft);
@@ -177,14 +201,21 @@
   color: var(--parchment);
   font-family: var(--font-body);
   font-size: 15px;
+  line-height: 1.4;
+  resize: none;
+  overflow-y: hidden;
+  max-height: 220px;
+  min-height: 48px;
 }
 
-.custom-turn-row input:focus {
+.custom-turn-row textarea:focus {
   border-color: var(--gold);
   outline: none;
 }
 
 .custom-turn-row button {
+  flex: 0 0 auto;
+  height: 48px;
   padding: 0 20px;
   background: var(--burgundy);
   color: var(--parchment);
@@ -196,6 +227,27 @@
 
 .custom-turn-row button:hover { background: #7a3232; }
 .custom-turn-row button[disabled] { opacity: 0.5; }
+
+/* -------- redo last turn -------- */
+.redo-turn-row {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.redo-turn-row button {
+  background: none;
+  color: var(--parchment-dim);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.redo-turn-row button:hover { color: var(--gold-bright); }
 
 /* -------- side panels (stats/inventory) -------- */
 .panel-toggle-row {
@@ -359,7 +411,9 @@
   font-family: var(--font-body);
   font-size: 13px;
   min-height: 44px;
-  resize: vertical;
+  max-height: 200px;
+  resize: none;
+  overflow-y: hidden;
 }
 
 .inv-item__action:focus {

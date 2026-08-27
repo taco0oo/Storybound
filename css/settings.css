@@ -72,8 +72,10 @@
 
 .modal-field textarea {
   font-family: var(--font-body);
-  resize: vertical;
+  resize: none;
+  overflow-y: hidden;
   min-height: 90px;
+  max-height: 300px;
 }
 
 .modal-field textarea:focus,

@@ -113,7 +113,9 @@
 
 .field-group textarea {
   min-height: 90px;
-  resize: vertical;
+  max-height: 360px;
+  resize: none;
+  overflow-y: hidden;
 }
 
 .field-group input:focus,
