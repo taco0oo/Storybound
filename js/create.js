@@ -11,6 +11,34 @@ const params = new URLSearchParams(window.location.search);
 const editBookId = params.get("edit");
 let editingBook = null; // full Supabase row, set once loaded in edit mode
 
+// FIX (stuck-forever "Saving changes…" bug): every await below used to
+// have no timeout. If a Supabase call ever HUNG instead of resolving or
+// rejecting — e.g. the auth client's internal token-refresh lock gets
+// stuck (very common on mobile after the browser/PWA backgrounds the
+// tab mid-edit, which is easy to do across an 8-step wizard), or the
+// network just stalls — the promise never settled. Since the try/catch
+// around the submit handler only catches things that actually throw or
+// reject, a hang skipped it entirely: the button stayed on "Saving
+// changes…" indefinitely with no error and nothing ever saved.
+//
+// withTimeout() races any promise against a plain timer, so after N
+// seconds it always rejects with a clear message even if the original
+// call never would have. That guarantees the button gets re-enabled and
+// the user sees what happened instead of a silent infinite spinner.
+function withTimeout(promise, ms, label) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(
+        `${label} took too long and timed out. This usually means the ` +
+        `connection got stuck (common after the app sits backgrounded on ` +
+        `mobile) — please reload the page and try again.`
+      ));
+    }, ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 let steps = Array.from(document.querySelectorAll(".wizard-step"));
 let stepNames = [
   "Book Identity", "Protagonist", "World & AU", "Character Roster",
@@ -329,15 +357,19 @@ async function initEditMode() {
       throw new Error("Couldn't connect to the account service — check your connection and reload.");
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await withTimeout(supabase.auth.getSession(), 12000, "Checking your login");
     if (!session) { window.location.href = "login.html"; return; }
 
-    const { data, error } = await supabase
-      .from("books")
-      .select("*")
-      .eq("id", editBookId)
-      .eq("user_id", session.user.id)
-      .single();
+    const { data, error } = await withTimeout(
+      supabase
+        .from("books")
+        .select("*")
+        .eq("id", editBookId)
+        .eq("user_id", session.user.id)
+        .single(),
+      12000,
+      "Loading your book"
+    );
 
     if (error || !data) {
       throw new Error("Couldn't find this book to edit.");
@@ -389,7 +421,7 @@ form.addEventListener("submit", async (e) => {
       );
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await withTimeout(supabase.auth.getSession(), 12000, "Checking your login");
     if (!session) { window.location.href = "login.html"; return; }
 
     const title = document.getElementById("title").value.trim();
@@ -476,17 +508,21 @@ form.addEventListener("submit", async (e) => {
         }
       };
 
-      const { error } = await supabase
-        .from("books")
-        .update({
-          title,
-          cover_config: coverConfig,
-          design,
-          world: worldNotes,
-          data: mergedBookData,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", editingBook.id);
+      const { error } = await withTimeout(
+        supabase
+          .from("books")
+          .update({
+            title,
+            cover_config: coverConfig,
+            design,
+            world: worldNotes,
+            data: mergedBookData,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", editingBook.id),
+        15000,
+        "Saving your changes"
+      );
 
       if (error) {
         throw new Error(error.message || "Supabase rejected the update — check your RLS policies allow UPDATE on the books table for the logged-in user.");
@@ -545,18 +581,22 @@ form.addEventListener("submit", async (e) => {
       progress: null
     };
 
-    const { data: newBook, error } = await supabase
-      .from("books")
-      .insert({
-        user_id: session.user.id,
-        title,
-        cover_config: coverConfig,
-        design,
-        world: worldNotes,
-        data: bookData
-      })
-      .select()
-      .single();
+    const { data: newBook, error } = await withTimeout(
+      supabase
+        .from("books")
+        .insert({
+          user_id: session.user.id,
+          title,
+          cover_config: coverConfig,
+          design,
+          world: worldNotes,
+          data: bookData
+        })
+        .select()
+        .single(),
+      15000,
+      "Creating your book"
+    );
 
     if (error) {
       throw new Error(error.message || "Supabase rejected the insert — check your RLS policies allow INSERT and SELECT on the books table for the logged-in user.");
